@@ -1,12 +1,29 @@
+
 import PdfRenderer from "./PdfRenderer";
 import DocxRenderer from "./DocxRenderer";
 import ImageRenderer from "./ImageRenderer";
 import ExcelRenderer from "./ExcelRenderer";
+import PptxRenderer from "./PptxRenderer";
 
-export default function DocumentRenderer({ document, isEditing, onChange, onPdfControls, onError, onExport, toolbarElement }) {
+export default function DocumentRenderer({
+  document,
+  isEditing,
+  onChange,
+  onPdfControls,
+  onError,
+  onExport,
+  toolbarElement,
+}) {
   if (document.format === "pdf") {
-    return <PdfRenderer source={document.source} onControlsChange={onPdfControls} onError={onError} />;
+    return (
+      <PdfRenderer
+        source={document.source}
+        onControlsChange={onPdfControls}
+        onError={onError}
+      />
+    );
   }
+
   if (document.format === "docx") {
     return (
       <DocxRenderer
@@ -18,14 +35,42 @@ export default function DocumentRenderer({ document, isEditing, onChange, onPdfC
       />
     );
   }
+
   if (document.format === "image") {
-    return <ImageRenderer source={document.source} filename={document.filename} />;
+    return (
+      <ImageRenderer
+        source={document.source}
+        filename={document.filename}
+      />
+    );
   }
+
   if (document.format === "xlsx") {
-    return <ExcelRenderer source={document.source} filename={document.filename} format={document.extension} onDownloadOriginal={() => onExport?.(document)} />;
+    return (
+      <ExcelRenderer
+        source={document.source}
+        filename={document.filename}
+        format={document.extension}
+        onDownloadOriginal={() => onExport?.(document)}
+      />
+    );
   }
+
+  if (document.format === "pptx") {
+    return (
+      <PptxRenderer
+        source={document.source}
+        filename={document.filename}
+        onDownloadOriginal={() => onExport?.(document)}
+      />
+    );
+  }
+
   return (
-    <p className="mx-auto max-w-xl p-8 text-center text-sm text-opsMuted" role="status">
+    <p
+      className="mx-auto max-w-xl p-8 text-center text-sm text-opsMuted"
+      role="status"
+    >
       This document format is not supported.
     </p>
   );

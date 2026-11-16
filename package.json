@@ -25,6 +25,7 @@
     "vite": "^5.4.0"
   },
   "dependencies": {
+    "@extend-ai/react-pptx": "^0.6.0",
     "lucide-react": "^0.344.0",
     "mammoth": "^1.9.0",
     "react": "^18.3.1",
