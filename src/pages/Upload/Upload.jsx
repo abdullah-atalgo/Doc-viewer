@@ -40,47 +40,11 @@ function Upload() {
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingWordFile, setPendingWordFile] = useState(null);
+  const [editable, setEditable] = useState(true);
 
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setError("");
-    setFileName(file.name);
-
+  const processFile = async (file, canEdit) => {
     const extension = file.name.split(".").pop().toLowerCase();
-
-    // Extension validation
-    if (!SUPPORTED_EXTENSIONS.includes(extension)) {
-      setError(
-        `Unsupported file format. Supported formats: ${SUPPORTED_EXTENSIONS.map(
-          (ext) => `.${ext}`,
-        ).join(", ")}`,
-      );
-      e.target.value = "";
-      return;
-    }
-
-    // MIME validation
-    const allowedMimeTypes = SUPPORTED_MIME_TYPES[extension];
-
-    if (
-      file.type &&
-      !allowedMimeTypes.includes(file.type) &&
-      file.type !== "application/octet-stream"
-    ) {
-      setError("Invalid file type. Please upload a valid document.");
-      e.target.value = "";
-      return;
-    }
-
-    // Empty file validation
-    if (file.size === 0) {
-      setError("File is empty.");
-      e.target.value = "";
-      return;
-    }
-
     let storedFileId;
 
     try {
@@ -121,6 +85,7 @@ function Upload() {
         mimeType: file.type || allowedMimeTypes[0],
         updatedAt: new Date().toLocaleString(),
         content: finalContent,
+        ...(["doc", "docx"].includes(extension) ? { editable: canEdit } : {}),
         ...(storedFileId ? { fileStorageId: storedFileId } : {}),
         readOnly: true,
       };
@@ -137,8 +102,58 @@ function Upload() {
       setError(err.message || "File processing failed.");
     } finally {
       setIsProcessing(false);
-      e.target.value = "";
     }
+  };
+
+  const handleFile = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setError("");
+    setFileName(file.name);
+    setPendingWordFile(null);
+    setEditable(true);
+
+    const extension = file.name.split(".").pop().toLowerCase();
+    if (!SUPPORTED_EXTENSIONS.includes(extension)) {
+      setError(
+        `Unsupported file format. Supported formats: ${SUPPORTED_EXTENSIONS.map(
+          (ext) => `.${ext}`,
+        ).join(", ")}`,
+      );
+      e.target.value = "";
+      return;
+    }
+
+    const allowedMimeTypes = SUPPORTED_MIME_TYPES[extension];
+    if (
+      file.type &&
+      !allowedMimeTypes.includes(file.type) &&
+      file.type !== "application/octet-stream"
+    ) {
+      setError("Invalid file type. Please upload a valid document.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size === 0) {
+      setError("File is empty.");
+      e.target.value = "";
+      return;
+    }
+
+    if (["doc", "docx"].includes(extension)) {
+      setPendingWordFile(file);
+      e.target.value = "";
+      return;
+    }
+
+    processFile(file, true);
+    e.target.value = "";
+  };
+
+  const handleWordUpload = () => {
+    if (pendingWordFile) processFile(pendingWordFile, editable);
   };
 
   return (
@@ -169,6 +184,29 @@ function Upload() {
             {fileName || "No file chosen"}
           </span>
         </label>
+
+        {pendingWordFile && (
+          <div className="mt-4 flex flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-opsText">
+              <input
+                type="checkbox"
+                checked={editable}
+                onChange={(event) => setEditable(event.target.checked)}
+                disabled={isProcessing}
+                className="h-4 w-4 accent-opsSecondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opsSecondary focus-visible:ring-offset-2"
+              />
+              <span>Allow document editing</span>
+            </label>
+            <button
+              type="button"
+              onClick={handleWordUpload}
+              disabled={isProcessing}
+              className="rounded-sm bg-opsSecondary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-opsSecondaryContainer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opsSecondary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isProcessing ? "Processing..." : "Upload document"}
+            </button>
+          </div>
+        )}
 
         {isProcessing && (
           <p className="mt-4 text-sm text-opsMuted" role="status">

@@ -93,6 +93,7 @@ export default function DemoDocumentViewer({ isOpen, setIsOpen, id }) {
             format: getFormat(stored.extension),
             extension: stored.extension?.toLowerCase() || "",
             mimeType: stored.mimeType || "",
+            editable: stored.editable !== false,
             source,
             content:
               ["doc", "docx"].includes(stored.extension?.toLowerCase())
