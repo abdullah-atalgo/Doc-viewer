@@ -12,6 +12,7 @@ import {
 
 function Header({
   isEditing,
+  editable = true,
   onClose,
   onToolbarElement,
   showDownload = true,
@@ -27,14 +28,15 @@ function Header({
   setPage,
 }) {
   const isPdf = extension === "pdf";
-  const actionButtonClass = `flex items-center rounded-md bg-transparent px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-opsSurfaceHigh focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opsSecondary ${isPdf ? "text-intelQEBlue hover:bg-white/10 focus-visible:ring-offset-opsPrimaryContainer" : "text-opsText focus-visible:ring-offset-opsSurfaceContainer"}`;
+  const isWord = extension === "docx";
+  const actionButtonClass = `flex items-center rounded-md bg-transparent px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-opsSurfaceHigh focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opsSecondary disabled:cursor-not-allowed disabled:opacity-40 ${isPdf ? "text-intelQEBlue hover:bg-white/10 focus-visible:ring-offset-opsPrimaryContainer" : "text-opsText focus-visible:ring-offset-opsSurfaceContainer"}`;
   const pdfButtonClass = "flex items-center justify-center rounded-md bg-transparent p-1.5 text-intelQEBlue transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-opsSecondary focus-visible:ring-offset-2 focus-visible:ring-offset-opsPrimaryContainer disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <header
       className={`relative flex min-h-13 flex-wrap items-center justify-between gap-2 rounded-sm border-b border-opsSurfaceHigh px-3.5 py-1.5 font-sans ${isPdf ? "bg-opsPrimaryContainer text-intelQEBlue" : "bg-opsSurfaceContainer text-opsText"}`}
     >
-      {!isPdf && (
+      {isWord && (
         <div
           ref={onToolbarElement}
           aria-label="Text formatting"
@@ -121,13 +123,14 @@ function Header({
       )}
 
       <div className="ml-auto flex items-center">
-        {!isPdf && onToggleEdit && (
+        {isWord && onToggleEdit && (
           <>
             <span className="mx-1.5 text-xs text-opsMuted">{wordCount} words</span>
             <button
               type="button"
               className={actionButtonClass}
               onClick={onToggleEdit}
+              disabled={!editable}
               aria-label={isEditing ? "Preview document" : "Edit document"}
               title={isEditing ? "Preview document" : "Edit document"}
             >

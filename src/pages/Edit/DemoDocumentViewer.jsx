@@ -17,6 +17,8 @@ function getFormat(extension = "") {
     return "image";
   }
 
+  if (normalized === "ppt") return "ppt";
+
   if (normalized === "pptx") return "pptx";
 
   return "unknown";

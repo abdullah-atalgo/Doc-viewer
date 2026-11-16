@@ -87,7 +87,7 @@ export default function PptxRenderer({
   return (
     <div className="flex h-full min-h-[500px] flex-col bg-opsSurfaceLow">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 border-b border-opsOutlineVariant bg-opsSurfaceContainer px-4 py-3">
+      <div className="flex items-center justify-between gap-3 border-b border-opsOutlineVariant bg-opsSurfaceContainer py-3 pl-4 pr-14">
         <div className="flex min-w-0 items-center gap-2">
           <Presentation className="h-5 w-5 shrink-0 text-opsSecondary" />
 
