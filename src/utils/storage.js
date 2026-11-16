@@ -1,3 +1,5 @@
+import { deletePdfBlob } from "./pdfStorage";
+
 const STORAGE_KEY = "documents";
 
 export function getDocuments() {
@@ -28,6 +30,7 @@ export function getDocumentExtension(id) {
 export function deleteDocument(id) {
   const docs = getDocuments().filter((doc) => doc.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+  deletePdfBlob(id).catch(() => {});
 }
 
 export function updateDocument(id, updates) {
